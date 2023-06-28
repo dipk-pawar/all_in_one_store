@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "apps.accounts",
     "apps.category",
+    "apps.store",
 ]
 
 MIDDLEWARE = [
@@ -126,3 +127,7 @@ STATIC_ROOT = BASE_DIR / "static"
 STATICFILES_DIRS = [
     "all_in_one_store/static",
 ]
+
+# media files configurations
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
