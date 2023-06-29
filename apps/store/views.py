@@ -4,4 +4,10 @@ from .models import Product
 
 # Create your views here.
 def store(request):
-    return render(request, "store/store.html")
+    products = Product.objects.filter(is_available=True)
+    product_counts = products.count()
+    return render(
+        request,
+        "store/store.html",
+        context={"products": products, "product_counts": product_counts},
+    )
