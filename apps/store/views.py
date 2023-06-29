@@ -3,6 +3,5 @@ from .models import Product
 
 
 # Create your views here.
-def home(request):
-    products = Product.objects.filter(is_available=True)
-    return render(request, "home.html", context={"products": products})
+def store(request):
+    return render(request, "store/store.html")
