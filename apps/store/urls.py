@@ -1,4 +1,4 @@
-from apps.store.views import store, product_detail
+from .views import store, product_detail
 from django.urls import path
 
 urlpatterns = [
