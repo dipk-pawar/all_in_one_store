@@ -1,11 +1,22 @@
+import contextlib
 from django.shortcuts import redirect, render
 from apps.store.models import Product
 from .models import Cart, CartItem
 
 
 # Create your views here.
-def cart(request):
-    return render(request, "store/cart.html")
+def cart(request, total=0, quantity=0, cart_items=None):
+    with contextlib.suppress(Cart.DoesNotExist):
+        cart = Cart.objects.get(cart_id=_cart_id(request))
+        cart_items = CartItem.objects.filter(cart=cart, is_active=False)
+        for cart_item in cart_items:
+            total += cart_item.product.price * cart_item.quantity
+            quantity += cart_item.quantity
+    return render(
+        request,
+        "store/cart.html",
+        context={"total": total, "quantity": quantity, "cart_items": cart_items},
+    )
 
 
 def _cart_id(requst):
