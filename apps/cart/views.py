@@ -6,6 +6,8 @@ from .models import Cart, CartItem
 
 # Create your views here.
 def cart(request, total=0, quantity=0, cart_items=None):
+    tax = 0
+    grand_total = 0
     with contextlib.suppress(Cart.DoesNotExist):
         cart = Cart.objects.get(cart_id=_cart_id(request))
         cart_items = CartItem.objects.filter(cart=cart, is_active=True)
