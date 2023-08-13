@@ -1,5 +1,5 @@
 import contextlib
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from apps.store.models import Product
 from .models import Cart, CartItem
 
@@ -19,16 +19,16 @@ def cart(request, total=0, quantity=0, cart_items=None):
     )
 
 
-def _cart_id(requst):
-    return requst.session.session_key or requst.session.create()
+def _cart_id(request):
+    return request.session.session_key or request.session.create()
 
 
-def add_cart(requst, product_id):
+def add_cart(request, product_id):
     product = Product.objects.get(id=product_id)
     try:
-        cart = Cart.objects.get(cart_id=_cart_id(requst))
+        cart = Cart.objects.get(cart_id=_cart_id(request))
     except Cart.DoesNotExist:
-        cart = Cart.objects.create(cart_id=_cart_id(requst))
+        cart = Cart.objects.create(cart_id=_cart_id(request))
         cart.save()
 
     try:
@@ -39,4 +39,23 @@ def add_cart(requst, product_id):
         cart_item = CartItem.objects.create(product=product, cart=cart, quantity=1)
         cart_item.save()
 
+    return redirect("cart")
+
+
+def remove_cart(request, product_id):
+    cart = Cart.objects.get(cart_id=_cart_id(request))
+    product = get_object_or_404(Product, id=product_id)
+    cart_item = CartItem.objects.get(product=product, cart=cart)
+    if cart_item.quantity > 1:
+        cart_item.quantity -= 1
+        cart_item.save()
+    else:
+        cart_item.delete()
+    return redirect("cart")
+
+
+def remove_cart_item(request, product_id):
+    cart = Cart.objects.get(cart_id=_cart_id(request))
+    product = get_object_or_404(Product, id=product_id)
+    cart_item = CartItem.objects.get(product=product, cart=cart).delete()
     return redirect("cart")

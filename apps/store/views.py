@@ -11,6 +11,7 @@ def store(request, category_slug=None):
     else:
         products = Product.objects.all()
     product_counts = products.count()
+
     return render(
         request,
         "store/store.html",
