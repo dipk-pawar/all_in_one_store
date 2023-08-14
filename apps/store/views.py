@@ -43,3 +43,19 @@ def product_detail(request, category_slug, product_slug):
         "store/product_detail.html",
         context={"single_product": single_product, "in_cart": in_cart},
     )
+
+
+def search(request):
+    if "keyword" in request.GET:
+        key_word = request.GET["keyword"]
+        products = Product.objects.filter(
+            description__icontains=key_word, product_name__icontains=key_word
+        ).order_by("id")
+    else:
+        products = Product.objects.all().order_by("id")
+    context = {"products": products, "product_counts": products.count()}
+    return render(
+        request,
+        "store/store.html",
+        context=context,
+    )
