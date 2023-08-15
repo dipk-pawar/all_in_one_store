@@ -32,30 +32,12 @@
 		<div class="item-option-select">
 			<h6>Choose color</h6>
 			<select name="color" class="form-control">
-				<option value="red">Red</option>
-				<option value="yellow">Yellow</option>
-				<option value="green">Green</option>
-				<option value="black">Black</option>
+			<option value="" disabled selected>--Choose color--</option>
+			{% for i in single_product.variation_set.all %}
+				<option value="{{i.variation_value}}">{{i.variation_value}}</option>
+			{% endfor %}
 			</select>
 		</div>
-
-		{% comment %} <div class="item-option-select">
-			<h6>Choose Color</h6>
-			<div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons">
-			  <label class="btn btn-light">
-			    <input type="radio" name="radio_color"> Silver
-			  </label>
-			  <label class="btn btn-light">
-			    <input type="radio" name="radio_color" > Gray
-			  </label>
-			  <label class="btn btn-light active">
-			    <input type="radio" name="radio_color checked"> Gold
-			  </label>
-			  <label class="btn btn-light">
-			    <input type="radio" name="radio_color"> Black
-			  </label>
-			</div> 
-		</div> {% endcomment %}
 	</div> <!-- row.// -->
 	<div class="row">
 		<div class="item-option-select">
@@ -66,20 +48,6 @@
 				<option value="large">Large</option>
 				<option value="xl">XL</option>
 			</select>
-			{% comment %} <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons">
-			  <label class="btn btn-light">
-			    <input type="radio" name="radio_color"> S
-			  </label>
-			  <label class="btn btn-light active">
-			    <input type="radio" name="radio_color" checked> M
-			  </label>
-			  <label class="btn btn-light">
-			    <input type="radio" name="radio_color"> L
-			  </label>
-			  <label class="btn btn-light">
-			    <input type="radio" name="radio_color"> XL
-			  </label> {% endcomment %}
-			{% comment %} </div>  {% endcomment %}
 		</div>
 	</div> <!-- row.// -->
 	<hr>
