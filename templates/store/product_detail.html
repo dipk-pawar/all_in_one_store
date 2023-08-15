@@ -30,6 +30,16 @@
 <hr>
 	<div class="row">
 		<div class="item-option-select">
+			<h6>Choose color</h6>
+			<select name="color" class="form-control">
+				<option value="red">Red</option>
+				<option value="yellow">Yellow</option>
+				<option value="green">Green</option>
+				<option value="black">Black</option>
+			</select>
+		</div>
+
+		{% comment %} <div class="item-option-select">
 			<h6>Choose Color</h6>
 			<div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons">
 			  <label class="btn btn-light">
@@ -45,12 +55,18 @@
 			    <input type="radio" name="radio_color"> Black
 			  </label>
 			</div> 
-		</div>
+		</div> {% endcomment %}
 	</div> <!-- row.// -->
 	<div class="row">
 		<div class="item-option-select">
 			<h6>Select Size</h6>
-			<div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons">
+			<select name="size" class="form-control">
+				<option value="small">Small</option>
+				<option value="medium">Medium</option>
+				<option value="large">Large</option>
+				<option value="xl">XL</option>
+			</select>
+			{% comment %} <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons">
 			  <label class="btn btn-light">
 			    <input type="radio" name="radio_color"> S
 			  </label>
@@ -62,8 +78,8 @@
 			  </label>
 			  <label class="btn btn-light">
 			    <input type="radio" name="radio_color"> XL
-			  </label>
-			</div> 
+			  </label> {% endcomment %}
+			{% comment %} </div>  {% endcomment %}
 		</div>
 	</div> <!-- row.// -->
 	<hr>
