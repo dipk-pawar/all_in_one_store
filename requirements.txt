@@ -1,3 +1,4 @@
+# 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
 asgiref==3.2.10
 Django==3.1
 Pillow==9.5.0

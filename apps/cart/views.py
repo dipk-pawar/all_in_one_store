@@ -1,6 +1,6 @@
 import contextlib
 from django.shortcuts import get_object_or_404, redirect, render
-from apps.store.models import Product
+from apps.store.models import Product, Variation
 from .models import Cart, CartItem
 
 
@@ -36,6 +36,21 @@ def _cart_id(request):
 
 def add_cart(request, product_id):
     product = Product.objects.get(id=product_id)
+    if request.method == "POST":
+        for item in request.POST:
+            item_key = item
+            item_value = request.POST[item_key]
+            try:
+                variation = Variation.objects.get(
+                    product=product,
+                    variation_category__iexact=item_key,
+                    variation_value__iexact=item_value,
+                )
+            except Exception:
+                pass
+    color = request.POST["color"]
+    size = request.POST["size"]
+
     try:
         cart = Cart.objects.get(cart_id=_cart_id(request))
     except Cart.DoesNotExist:
