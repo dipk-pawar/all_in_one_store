@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class StoreConfig(AppConfig):
-    name = 'apps.store'
+    name = "apps.store"

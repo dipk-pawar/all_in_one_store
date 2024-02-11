@@ -1,8 +1,9 @@
-from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.shortcuts import redirect, render
 
 from apps.accounts.models import Account
+
 from .forms import RegistrationForm
-from django.contrib import messages
 
 
 # Create your views here.

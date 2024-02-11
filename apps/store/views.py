@@ -1,9 +1,11 @@
+from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, render
-from apps.cart.views import _cart_id
-from .models import Product
-from apps.category.models import Category
+
 from apps.cart.models import CartItem
-from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from apps.cart.views import _cart_id
+from apps.category.models import Category
+
+from .models import Product
 
 
 # Create your views here.

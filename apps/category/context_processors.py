@@ -1,6 +1,7 @@
-from apps.cart.views import _cart_id
-from .models import Category
 from apps.cart.models import Cart, CartItem
+from apps.cart.views import _cart_id
+
+from .models import Category
 
 
 def menu_links(request):
