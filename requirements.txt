@@ -1,6 +1,21 @@
-# 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
 asgiref==3.2.10
+certifi==2024.2.2
+cfgv==3.4.0
+charset-normalizer==3.3.2
+distlib==0.3.8
 Django==3.1
+filelock==3.13.1
+identify==2.5.34
+idna==3.6
+mailjet-rest==1.3.4
+nodeenv==1.8.0
 Pillow==9.5.0
+platformdirs==4.2.0
+pre-commit==3.6.1
+python-decouple==3.8
 pytz==2020.1
+PyYAML==6.0.1
+requests==2.31.0
 sqlparse==0.3.1
+urllib3==2.2.0
+virtualenv==20.25.0

@@ -1,10 +1,21 @@
+from django.conf import settings
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from mailjet_rest import Client
 
 from apps.accounts.models import Account
 
 from .forms import RegistrationForm
+
+mailjet = Client(
+    auth=(settings.MAILJET_API_KEY, settings.MAILJET_SECRET_KEY), version="v3.1"
+)
 
 
 # Create your views here.
@@ -33,9 +44,35 @@ def register_user(request):
             # Add additional user details
             user.phone_number = phone_number
             user.save()
-            # Display success message
-            messages.success(request, "Registration successfully")
-            return redirect("register")
+
+            # USER ACTIVATION
+            current_site = get_current_site(request)
+
+            # Render the email message template with necessary data
+            message = render_to_string(
+                "accounts/account_verification_email.html",
+                {
+                    "user": user,
+                    "domain": current_site,
+                    "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                    "token": default_token_generator.make_token(user),
+                },
+            )
+
+            # Prepare the email data
+            data = {
+                "Messages": [
+                    {
+                        "From": {"Email": settings.SENDER_EMAIL, "Name": "GreatKart"},
+                        "To": [{"Email": email, "Name": f"{first_name} {last_name}"}],
+                        "Subject": "Please activate your account",
+                        "HTMLPart": message,
+                    }
+                ]
+            }
+            # Send the email using the Mailjet API
+            mailjet.send.create(data=data)
+            return redirect("/accounts/login/?command=verification&email=" + email)
     else:
         # If request method is not POST, display empty registration form
         form = RegistrationForm()
@@ -77,3 +114,28 @@ def logout_user(request):
     messages.success(request, "You are successfully logged out")
     # Redirect to login page
     return redirect("login")
+
+
+def activate(request, uidb64, token):
+    try:
+        # Decode the uidb64 to get the user's primary key
+        uid = urlsafe_base64_decode(uidb64).decode()
+        # Retrieve the user based on the primary key
+        user = Account._default_manager.get(pk=uid)
+    except Exception:
+        # If there's an error decoding or retrieving the user, set user to None
+        user = None
+
+    # Check if user is not None and the token is valid
+    if user is not None and default_token_generator.check_token(user, token):
+        # If both conditions are met, activate the user's account
+        user.is_active = True
+        user.save()
+        # Display a success message indicating that the account is activated
+        messages.success(request, "Congratulations! Your account is activated.")
+        return redirect("login")
+    else:
+        # If either user is None or the token is invalid, display an error message
+        messages.error(request, "Invalid activation link")
+        # Redirect the user to the registration page
+        return redirect("register")

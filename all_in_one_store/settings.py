@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 
 from pathlib import Path
 
+from decouple import config
 from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,10 +23,10 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "r6hf5p(9b^r^99*&*ur9gmh8&3d!7n3palfz@oofuw%0^&c)*b"
+SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config("DEBUG", default=True, cast=bool)  # True
 
 ALLOWED_HOSTS = []
 
@@ -136,5 +137,11 @@ STATICFILES_DIRS = [
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-
+# Message tags
 MESSAGE_TAGS = {messages.ERROR: "danger"}
+
+
+# Email configuration
+MAILJET_API_KEY = config("MAILJET_API_KEY")
+MAILJET_SECRET_KEY = config("MAILJET_SECRET_KEY")
+SENDER_EMAIL = config("SENDER_EMAIL")
