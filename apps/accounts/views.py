@@ -139,3 +139,103 @@ def activate(request, uidb64, token):
         messages.error(request, "Invalid activation link")
         # Redirect the user to the registration page
         return redirect("register")
+
+
+def forgotPassword(request):
+    if request.method == "POST":
+        # Get the email from the POST data
+        email = request.POST["email"]
+        # Check if an account with this email exists
+        if Account.objects.filter(email=email).exists():
+            # If the account exists, retrieve the user object
+            user = Account.objects.get(email__exact=email)
+
+            # Generate a reset password email
+            current_site = get_current_site(request)
+            message = render_to_string(
+                "accounts/reset_password_email.html",
+                {
+                    "user": user,
+                    "domain": current_site,
+                    "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                    "token": default_token_generator.make_token(user),
+                },
+            )
+
+            # Prepare the email data
+            data = {
+                "Messages": [
+                    {
+                        "From": {"Email": settings.SENDER_EMAIL, "Name": "GreatKart"},
+                        "To": [
+                            {
+                                "Email": email,
+                                "Name": f"{user.first_name} {user.last_name}",
+                            }
+                        ],
+                        "Subject": "Reset Your Password",
+                        "HTMLPart": message,
+                    }
+                ]
+            }
+            # Send the email using the Mailjet API
+            mailjet.send.create(data=data)
+
+            # Notify the user that the reset email has been sent
+            messages.success(
+                request, "Password reset email has been sent to your email address."
+            )
+            return redirect("login")
+        else:
+            # If the account does not exist, show an error message
+            messages.error(request, "Account does not exist!")
+            return redirect("forgotPassword")
+    return render(request, "accounts/forgotPassword.html")
+
+
+def resetpassword_validate(request, uidb64, token):
+    try:
+        # Decode the user ID from base64
+        uid = urlsafe_base64_decode(uidb64).decode()
+        # Retrieve the user object
+        user = Account._default_manager.get(pk=uid)
+    except Exception:
+        user = None
+
+    # Check if the user exists and the token is valid
+    if user is not None and default_token_generator.check_token(user, token):
+        # If valid, store the user ID in the session
+        request.session["uid"] = uid
+        # Notify the user to reset their password
+        messages.success(request, "Please reset your password")
+        return redirect("resetPassword")
+    else:
+        # If the link is expired or invalid, show an error message
+        messages.error(request, "This link has been expired!")
+        return redirect("login")
+
+
+def resetPassword(request):
+    if request.method == "POST":
+        # Get the new password and confirm password from the POST data
+        password = request.POST["password"]
+        confirm_password = request.POST["confirm_password"]
+
+        # Check if passwords match
+        if password == confirm_password:
+            # Retrieve the user ID from the session
+            uid = request.session.get("uid")
+            # Retrieve the user object
+            user = Account.objects.get(pk=uid)
+            # Set the new password for the user
+            user.set_password(password)
+            user.save()
+            # Notify the user that password reset is successful
+            messages.success(request, "Password reset successful")
+            return redirect("login")
+        else:
+            # If passwords don't match, show an error message
+            messages.error(request, "Password do not match!")
+            return redirect("resetPassword")
+    else:
+        return render(request, "accounts/resetPassword.html")
